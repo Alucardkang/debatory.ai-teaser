@@ -41,6 +41,10 @@
       6. '설명'을 입력하고, '웹 앱' 설정에서 '액세스 권한이 있는 사용자'를 '모든 사용자'로 변경합니다.
       7. '배포' 버튼을 클릭하고 권한을 승인합니다.
       8. 생성된 '웹 앱 URL'을 복사하여 아래 JavaScript 코드의 `googleScriptURL` 변수에 붙여넣습니다.
+
+    배포 ID: AKfycbxShgmcot0GtK1eIRC6lqU7naQzMlxVhnUuSBt7Iv6R7NLfE9D3CAiMBAUhjXLpEAoZ
+    URL: https://script.google.com/macros/s/AKfycbxShgmcot0GtK1eIRC6lqU7naQzMlxVhnUuSBt7Iv6R7NLfE9D3CAiMBAUhjXLpEAoZ/exec
+
     -->
     <style>
         body { background-color: #F8F7F4; color: #3D405B; }
@@ -106,7 +110,7 @@
     </footer>
 
     <script>
-        const googleScriptURL = '여기에_배포된_웹_앱_URL을_붙여넣으세요';
+        const googleScriptURL = 'https://script.google.com/macros/s/AKfycbxShgmcot0GtK1eIRC6lqU7naQzMlxVhnUuSBt7Iv6R7NLfE9D3CAiMBAUhjXLpEAoZ/exec';
 
         const translations = {
             ko: {
@@ -186,7 +190,7 @@
 
         subscribeForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            if (googleScriptURL === '여기에_배포된_웹_앱_URL을_붙여넣으세요') {
+            if (googleScriptURL === 'https://script.google.com/macros/s/AKfycbxShgmcot0GtK1eIRC6lqU7naQzMlxVhnUuSBt7Iv6R7NLfE9D3CAiMBAUhjXLpEAoZ/exec') {
                 formMessage.textContent = 'Google Apps Script URL이 설정되지 않았습니다.';
                 formMessage.className = 'mt-4 text-sm text-red-600';
                 return;
