@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debatory.ai - AI 토론의 미래</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;500;700&family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- 
+      Google Apps Script 설정 안내:
+      1. 새 Google Sheets 문서를 생성합니다.
+      2. '확장 프로그램' > 'Apps Script'로 이동합니다.
+      3. 아래의 스크립트 코드를 복사하여 붙여넣고 저장합니다.
+      
+         function doPost(e) {
+           try {
+             var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Subscribers");
+             if (!sheet) {
+               sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet("Subscribers");
+               sheet.appendRow(["Timestamp", "Email", "Detected Country", "Submitted Language"]);
+             }
+             
+             var data = JSON.parse(e.postData.contents);
+             
+             if (!data.email) {
+               return ContentService.createTextOutput(JSON.stringify({ "result": "error", "message": "Email is missing." })).setMimeType(ContentService.MimeType.JSON);
+             }
+             
+             sheet.appendRow([new Date(), data.email, data.country, data.language]);
+             
+             return ContentService.createTextOutput(JSON.stringify({ "result": "success" })).setMimeType(ContentService.MimeType.JSON);
+           } catch (error) {
+             return ContentService.createTextOutput(JSON.stringify({ "result": "error", "message": error.toString() })).setMimeType(ContentService.MimeType.JSON);
+           }
+         }
+
+      4. '배포' > '새 배포'를 클릭합니다.
+      5. '유형 선택' (톱니바퀴 아이콘) > '웹 앱'을 선택합니다.
+      6. '설명'을 입력하고, '웹 앱' 설정에서 '액세스 권한이 있는 사용자'를 '모든 사용자'로 변경합니다.
+      7. '배포' 버튼을 클릭하고 권한을 승인합니다.
+      8. 생성된 '웹 앱 URL'을 복사하여 아래 JavaScript 코드의 `googleScriptURL` 변수에 붙여넣습니다.
+    -->
+    <style>
+        body { background-color: #F8F7F4; color: #3D405B; }
+        .font-ko { font-family: 'Noto Sans KR', sans-serif; }
+        .font-ja { font-family: 'Noto Sans JP', sans-serif; }
+        .font-en { font-family: 'Poppins', sans-serif; }
+        .font-th { font-family: 'Sarabun', sans-serif; }
+        .font-tl { font-family: 'Poppins', sans-serif; } /* Filipino uses Latin alphabet */
+
+        .language-selector {
+            transition: all 0.3s ease;
+        }
+        .language-selector:hover {
+            background-color: #e0e0e0;
+        }
+        .submit-button {
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .submit-button:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-[#3D405B]">Debatory<span class="text-[#E07A5F]">.ai</span></h1>
+            <div class="relative">
+                <select id="language-selector" class="language-selector appearance-none bg-gray-200 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-full leading-tight focus:outline-none focus:bg-white focus:border-gray-500 cursor-pointer">
+                    <option value="ko">🇰🇷 한국어</option>
+                    <option value="ja">🇯🇵 日本語</option>
+                    <option value="en">EN English</option>
+                    <option value="th">🇹🇭 ภาษาไทย</option>
+                    <option value="tl">🇵🇭 Filipino</option>
+                </select>
+            </div>
+        </div>
+    </nav>
+
+    <main id="main-content" class="font-ko">
+        <section class="min-h-[80vh] flex items-center">
+            <div class="container mx-auto px-6 py-12 text-center">
+                <h2 id="main-headline" class="text-4xl md:text-6xl font-bold text-[#3D405B] mb-4 leading-tight"></h2>
+                <p id="sub-headline" class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-12"></p>
+                
+                <form id="subscribe-form" class="max-w-md mx-auto">
+                    <div class="flex items-center border-b-2 border-[#81B29A] py-2">
+                        <input id="email-input" class="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" type="email" placeholder="your.email@address.com" aria-label="Email address" required>
+                        <button id="submit-button" class="submit-button flex-shrink-0 bg-[#81B29A] hover:bg-[#6a9a81] text-white font-bold py-2 px-6 rounded-full" type="submit">
+                        </button>
+                    </div>
+                    <p id="form-message" class="mt-4 text-sm text-green-600"></p>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-[#3D405B] text-white py-6">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2024 Insightens. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const googleScriptURL = '여기에_배포된_웹_앱_URL을_붙여넣으세요';
+
+        const translations = {
+            ko: {
+                fontClass: 'font-ko',
+                headline: "AI와 함께, 당신의 학생부를 완성하세요",
+                subHeadline: "Debatory.ai는 대입 성공을 위한 가장 확실한 선택입니다. 체계적인 토론 훈련과 AI 분석 리포트로 학생부종합전형에서 압도적인 경쟁력을 확보하세요. 가장 먼저 소식을 받아보세요.",
+                placeholder: "your.email@address.com",
+                buttonText: "사전 등록",
+                successMessage: "등록이 완료되었습니다! 가장 먼저 소식을 전해드리겠습니다.",
+                errorMessage: "오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+            },
+            ja: {
+                fontClass: 'font-ja',
+                headline: "アクティブ・ラーニング、AIで始めましょう",
+                subHeadline: "Debatory.aiは、新しい学習指導要領に対応する最も効果的なターンキーソリューションです。AIが教師の授業準備をサポートし、生徒の主体的・対話的な学びを最大化します。最新情報をお届けします。",
+                placeholder: "your.email@address.com",
+                buttonText: "事前登録",
+                successMessage: "ご登録ありがとうございます！最新情報をお送りします。",
+                errorMessage: "エラーが発生しました。もう一度お試しください。"
+            },
+            en: {
+                fontClass: 'font-en',
+                headline: "Win Your Next Debate with AI",
+                subHeadline: "Debatory.ai is the ultimate training platform for competitive debate teams. Gain a data-driven edge with AI-powered speech analysis and strategy feedback. Be the first to know when we launch.",
+                placeholder: "your.email@address.com",
+                buttonText: "Get Early Access",
+                successMessage: "You're on the list! We'll notify you first.",
+                errorMessage: "An error occurred. Please try again."
+            },
+            th: {
+                fontClass: 'font-th',
+                headline: "เตรียมพร้อมสู่เวทีโลกด้วย AI",
+                subHeadline: "Debatory.ai คือเครื่องมือสำคัญสำหรับโรงเรียนนานาชาติและนักเรียนที่มุ่งสู่ความเป็นเลิศ พัฒนาทักษะการโต้วาทีภาษาอังกฤษและปลูกฝังการคิดเชิงวิพากษ์ด้วยแพลตฟอร์ม AI ของเรา รับข่าวสารก่อนใคร",
+                placeholder: "your.email@address.com",
+                buttonText: "ลงทะเบียนล่วงหน้า",
+                successMessage: "ลงทะเบียนสำเร็จ! เราจะส่งข่าวสารให้คุณทราบก่อนใคร",
+                errorMessage: "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง"
+            },
+            tl: {
+                fontClass: 'font-tl',
+                headline: "Husayin ang Iyong Galing sa Debate gamit ang AI",
+                subHeadline: "Ang Debatory.ai ay ang pinakamahusay na platform para sa mga international school at mga mag-aaral na naghahangad ng pandaigdigang kahusayan. Pagbutihin ang mga kasanayan sa debate sa Ingles at kritikal na pag-iisip. Maunang makaalam sa aming paglulunsad.",
+                placeholder: "your.email@address.com",
+                buttonText: "Mag-subscribe",
+                successMessage: "Salamat sa pag-subscribe! Ipapaalam namin sa iyo ang mga update.",
+                errorMessage: "Nagkaroon ng error. Pakisubukang muli."
+            }
+        };
+
+        const mainContent = document.getElementById('main-content');
+        const headline = document.getElementById('main-headline');
+        const subHeadline = document.getElementById('sub-headline');
+        const emailInput = document.getElementById('email-input');
+        const submitButton = document.getElementById('submit-button');
+        const formMessage = document.getElementById('form-message');
+        const languageSelector = document.getElementById('language-selector');
+        const subscribeForm = document.getElementById('subscribe-form');
+
+        function changeLanguage(lang) {
+            if (!translations[lang]) return;
+
+            const content = translations[lang];
+            
+            document.documentElement.lang = lang;
+            mainContent.className = content.fontClass;
+            
+            headline.textContent = content.headline;
+            subHeadline.textContent = content.subHeadline;
+            emailInput.placeholder = content.placeholder;
+            submitButton.textContent = content.buttonText;
+            formMessage.textContent = '';
+        }
+
+        languageSelector.addEventListener('change', (e) => {
+            changeLanguage(e.target.value);
+        });
+
+        subscribeForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (googleScriptURL === '여기에_배포된_웹_앱_URL을_붙여넣으세요') {
+                formMessage.textContent = 'Google Apps Script URL이 설정되지 않았습니다.';
+                formMessage.className = 'mt-4 text-sm text-red-600';
+                return;
+            }
+
+            const email = emailInput.value;
+            const lang = languageSelector.value;
+            const userLang = navigator.language || navigator.userLanguage;
+
+            submitButton.disabled = true;
+            submitButton.textContent = '...';
+
+            fetch(googleScriptURL, {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: email, country: userLang, language: lang }),
+                redirect: 'follow',
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.result === 'success') {
+                    formMessage.textContent = translations[lang].successMessage;
+                    formMessage.className = 'mt-4 text-sm text-green-600';
+                    emailInput.value = '';
+                } else {
+                    throw new Error(data.message || 'Unknown error');
+                }
+            })
+            .catch(error => {
+                formMessage.textContent = translations[lang].errorMessage;
+                formMessage.className = 'mt-4 text-sm text-red-600';
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                submitButton.disabled = false;
+                submitButton.textContent = translations[lang].buttonText;
+            });
+        });
+
+        // Detect browser language and set initial language
+        const browserLang = (navigator.language || navigator.userLanguage).slice(0, 2);
+        if (translations[browserLang]) {
+            languageSelector.value = browserLang;
+            changeLanguage(browserLang);
+        } else {
+            changeLanguage('en'); // Default to English
+        }
+    </script>
+</body>
+</html>
