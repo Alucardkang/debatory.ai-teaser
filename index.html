@@ -9,41 +9,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;500;700&family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- 
-      Google Apps Script 설정 안내:
-      1. 새 Google Sheets 문서를 생성합니다.
-      2. '확장 프로그램' > 'Apps Script'로 이동합니다.
-      3. 아래의 스크립트 코드를 복사하여 붙여넣고 저장합니다.
-      
-         function doPost(e) {
-           try {
-             var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Subscribers");
-             if (!sheet) {
-               sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet("Subscribers");
-               sheet.appendRow(["Timestamp", "Email", "Detected Country", "Submitted Language"]);
-             }
-             
-             var data = JSON.parse(e.postData.contents);
-             
-             if (!data.email) {
-               return ContentService.createTextOutput(JSON.stringify({ "result": "error", "message": "Email is missing." })).setMimeType(ContentService.MimeType.JSON);
-             }
-             
-             sheet.appendRow([new Date(), data.email, data.country, data.language]);
-             
-             return ContentService.createTextOutput(JSON.stringify({ "result": "success" })).setMimeType(ContentService.MimeType.JSON);
-           } catch (error) {
-             return ContentService.createTextOutput(JSON.stringify({ "result": "error", "message": error.toString() })).setMimeType(ContentService.MimeType.JSON);
-           }
-         }
-
-      4. '배포' > '새 배포'를 클릭합니다.
-      5. '유형 선택' (톱니바퀴 아이콘) > '웹 앱'을 선택합니다.
-      6. '설명'을 입력하고, '웹 앱' 설정에서 '액세스 권한이 있는 사용자'를 '모든 사용자'로 변경합니다.
-      7. '배포' 버튼을 클릭하고 권한을 승인합니다.
-      8. 생성된 '웹 앱 URL'을 복사하여 아래 JavaScript 코드의 `googleScriptURL` 변수에 붙여넣습니다.
-
-
-
+      Formspree 설정 안내:
+      1. formspree.io 에 접속하여 회원가입합니다.
+      2. 새 프로젝트와 새 폼(form)을 생성합니다.
+      3. 생성된 폼의 엔드포인트 URL (예: https://formspree.io/f/xxxxxxxx)을 복사합니다.
+      4. 아래 <form> 태그의 action 속성에 복사한 URL을 붙여넣습니다.
+      5. Formspree 대시보드에서 제출된 이메일을 확인할 수 있습니다.
     -->
     <style>
         body { background-color: #F8F7F4; color: #3D405B; }
@@ -62,8 +33,12 @@
         .submit-button {
             transition: background-color 0.3s ease, transform 0.2s ease;
         }
-        .submit-button:hover {
+        .submit-button:hover:not(:disabled) {
             transform: translateY(-2px);
+        }
+        .submit-button:disabled {
+            cursor: not-allowed;
+            background-color: #9ca3af;
         }
     </style>
 </head>
@@ -76,7 +51,7 @@
                 <select id="language-selector" class="language-selector appearance-none bg-gray-200 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-full leading-tight focus:outline-none focus:bg-white focus:border-gray-500 cursor-pointer">
                     <option value="ko">🇰🇷 한국어</option>
                     <option value="ja">🇯🇵 日本語</option>
-                    <option value="en">EN English</option>
+                    <option value="en">🌍 English</option>
                     <option value="th">🇹🇭 ภาษาไทย</option>
                     <option value="tl">🇵🇭 Filipino</option>
                 </select>
@@ -90,13 +65,21 @@
                 <h2 id="main-headline" class="text-4xl md:text-6xl font-bold text-[#3D405B] mb-4 leading-tight"></h2>
                 <p id="sub-headline" class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-12"></p>
                 
-                <form id="subscribe-form" class="max-w-md mx-auto">
+                <form id="subscribe-form" action="https://formspree.io/f/mpwjaeba" method="POST" class="max-w-md mx-auto">
                     <div class="flex items-center border-b-2 border-[#81B29A] py-2">
-                        <input id="email-input" class="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" type="email" placeholder="your.email@address.com" aria-label="Email address" required>
+                        <input id="email-input" name="email" class="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" type="email" placeholder="your.email@address.com" aria-label="Email address" required>
                         <button id="submit-button" class="submit-button flex-shrink-0 bg-[#81B29A] hover:bg-[#6a9a81] text-white font-bold py-2 px-6 rounded-full" type="submit">
                         </button>
                     </div>
-                    <p id="form-message" class="mt-4 text-sm text-green-600"></p>
+                    <div class="mt-4 text-left">
+                        <label class="flex items-center text-sm text-gray-600">
+                            <input type="checkbox" id="privacy-checkbox" name="privacy-policy" class="form-checkbox h-4 w-4 text-green-600" required>
+                            <span id="privacy-label" class="ml-2"></span>
+                        </label>
+                    </div>
+                    <p id="form-message" class="mt-4 text-sm"></p>
+                    <input type="hidden" name="language" id="language-hidden-input">
+                    <input type="hidden" name="country" id="country-hidden-input">
                 </form>
             </div>
         </section>
@@ -109,8 +92,6 @@
     </footer>
 
     <script>
-        const googleScriptURL = 'https://script.google.com/macros/s/AKfycbxShgmcot0GtK1eIRC6lqU7naQzMlxVhnUuSBt7Iv6R7NLfE9D3CAiMBAUhjXLpEAoZ/exec';
-
         const translations = {
             ko: {
                 fontClass: 'font-ko',
@@ -118,6 +99,7 @@
                 subHeadline: "Debatory.ai는 대입 성공을 위한 가장 확실한 선택입니다. 체계적인 토론 훈련과 AI 분석 리포트로 학생부종합전형에서 압도적인 경쟁력을 확보하세요. 가장 먼저 소식을 받아보세요.",
                 placeholder: "your.email@address.com",
                 buttonText: "사전 등록",
+                privacyText: "개인정보 수집 및 이용에 동의합니다.",
                 successMessage: "등록이 완료되었습니다! 가장 먼저 소식을 전해드리겠습니다.",
                 errorMessage: "오류가 발생했습니다. 잠시 후 다시 시도해주세요."
             },
@@ -127,6 +109,7 @@
                 subHeadline: "Debatory.aiは、新しい学習指導要領に対応する最も効果的なターンキーソリューションです。AIが教師の授業準備をサポートし、生徒の主体的・対話的な学びを最大化します。最新情報をお届けします。",
                 placeholder: "your.email@address.com",
                 buttonText: "事前登録",
+                privacyText: "個人情報の収集と利用に同意します。",
                 successMessage: "ご登録ありがとうございます！最新情報をお送りします。",
                 errorMessage: "エラーが発生しました。もう一度お試しください。"
             },
@@ -136,6 +119,7 @@
                 subHeadline: "Debatory.ai is the ultimate training platform for competitive debate teams. Gain a data-driven edge with AI-powered speech analysis and strategy feedback. Be the first to know when we launch.",
                 placeholder: "your.email@address.com",
                 buttonText: "Get Early Access",
+                privacyText: "I agree to the collection and use of my personal information.",
                 successMessage: "You're on the list! We'll notify you first.",
                 errorMessage: "An error occurred. Please try again."
             },
@@ -145,6 +129,7 @@
                 subHeadline: "Debatory.ai คือเครื่องมือสำคัญสำหรับโรงเรียนนานาชาติและนักเรียนที่มุ่งสู่ความเป็นเลิศ พัฒนาทักษะการโต้วาทีภาษาอังกฤษและปลูกฝังการคิดเชิงวิพากษ์ด้วยแพลตฟอร์ม AI ของเรา รับข่าวสารก่อนใคร",
                 placeholder: "your.email@address.com",
                 buttonText: "ลงทะเบียนล่วงหน้า",
+                privacyText: "ฉันยอมรับในการเก็บรวบรวมและใช้ข้อมูลส่วนบุคคลของฉัน",
                 successMessage: "ลงทะเบียนสำเร็จ! เราจะส่งข่าวสารให้คุณทราบก่อนใคร",
                 errorMessage: "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง"
             },
@@ -154,6 +139,7 @@
                 subHeadline: "Ang Debatory.ai ay ang pinakamahusay na platform para sa mga international school at mga mag-aaral na naghahangad ng pandaigdigang kahusayan. Pagbutihin ang mga kasanayan sa debate sa Ingles at kritikal na pag-iisip. Maunang makaalam sa aming paglulunsad.",
                 placeholder: "your.email@address.com",
                 buttonText: "Mag-subscribe",
+                privacyText: "Sumasang-ayon ako sa pagkolekta at paggamit ng aking personal na impormasyon.",
                 successMessage: "Salamat sa pag-subscribe! Ipapaalam namin sa iyo ang mga update.",
                 errorMessage: "Nagkaroon ng error. Pakisubukang muli."
             }
@@ -167,6 +153,9 @@
         const formMessage = document.getElementById('form-message');
         const languageSelector = document.getElementById('language-selector');
         const subscribeForm = document.getElementById('subscribe-form');
+        const privacyLabel = document.getElementById('privacy-label');
+        const languageHiddenInput = document.getElementById('language-hidden-input');
+        const countryHiddenInput = document.getElementById('country-hidden-input');
 
         function changeLanguage(lang) {
             if (!translations[lang]) return;
@@ -180,6 +169,7 @@
             subHeadline.textContent = content.subHeadline;
             emailInput.placeholder = content.placeholder;
             submitButton.textContent = content.buttonText;
+            privacyLabel.textContent = content.privacyText;
             formMessage.textContent = '';
         }
 
@@ -187,50 +177,46 @@
             changeLanguage(e.target.value);
         });
 
-        subscribeForm.addEventListener('submit', function(e) {
+        subscribeForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            if (googleScriptURL === 'https://script.google.com/macros/s/AKfycbxShgmcot0GtK1eIRC6lqU7naQzMlxVhnUuSBt7Iv6R7NLfE9D3CAiMBAUhjXLpEAoZ/exec') {
-                formMessage.textContent = 'Google Apps Script URL이 설정되지 않았습니다.';
-                formMessage.className = 'mt-4 text-sm text-red-600';
-                return;
-            }
-
-            const email = emailInput.value;
+            const form = e.target;
             const lang = languageSelector.value;
-            const userLang = navigator.language || navigator.userLanguage;
-
+            
             submitButton.disabled = true;
             submitButton.textContent = '...';
+            formMessage.textContent = '';
 
-            fetch(googleScriptURL, {
-                method: 'POST',
-                mode: 'cors',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email: email, country: userLang, language: lang }),
-                redirect: 'follow',
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.result === 'success') {
+            // Set hidden input values before submission
+            languageHiddenInput.value = lang;
+            countryHiddenInput.value = navigator.language || navigator.userLanguage;
+
+            const data = new FormData(form);
+
+            try {
+                const response = await fetch(form.action, {
+                    method: form.method,
+                    body: data,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
                     formMessage.textContent = translations[lang].successMessage;
                     formMessage.className = 'mt-4 text-sm text-green-600';
-                    emailInput.value = '';
+                    form.reset();
+                    changeLanguage(lang); // Reset placeholder text after form reset
                 } else {
-                    throw new Error(data.message || 'Unknown error');
+                    throw new Error('Network response was not ok.');
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 formMessage.textContent = translations[lang].errorMessage;
                 formMessage.className = 'mt-4 text-sm text-red-600';
                 console.error('Error:', error);
-            })
-            .finally(() => {
+            } finally {
                 submitButton.disabled = false;
                 submitButton.textContent = translations[lang].buttonText;
-            });
+            }
         });
 
         // Detect browser language and set initial language
