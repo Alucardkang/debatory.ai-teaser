@@ -65,6 +65,7 @@
                 <h2 id="main-headline" class="text-4xl md:text-6xl font-bold text-[#3D405B] mb-4 leading-tight"></h2>
                 <p id="sub-headline" class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-12"></p>
                 
+                <p id="waitlist-prompt" class="text-gray-600 mb-4"></p>
                 <form id="subscribe-form" action="https://formspree.io/f/mpwjaeba" method="POST" class="max-w-md mx-auto">
                     <div class="flex items-center border-b-2 border-[#81B29A] py-2">
                         <input id="email-input" name="email" class="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" type="email" placeholder="your.email@address.com" aria-label="Email address" required>
@@ -92,55 +93,166 @@
     </footer>
 
     <script>
+        // const translations = {
+        //     ko: {
+        //         fontClass: 'font-ko',
+        //         headline: "AI와 함께, 당신의 학생부를 완성하세요",
+        //         subHeadline: "Debatory.ai는 대입 성공을 위한 가장 확실한 선택입니다. 체계적인 토론 훈련과 AI 분석 리포트로 학생부종합전형에서 압도적인 경쟁력을 확보하세요. 가장 먼저 소식을 받아보세요.",
+        //         placeholder: "your.email@address.com",
+        //         buttonText: "사전 등록",
+        //         privacyText: "개인정보 수집 및 이용에 동의합니다.",
+        //         successMessage: "신청해주셔서 감사합니다! 곧 좋은 소식으로 찾아뵙겠습니다.",
+        //         errorMessage: "오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+        //     },
+        //     ja: {
+        //         fontClass: 'font-ja',
+        //         headline: "アクティブ・ラーニング、AIで始めましょう",
+        //         subHeadline: "Debatory.aiは、新しい学習指導要領に対応する最も効果的なターンキーソリューションです。AIが教師の授業準備をサポートし、生徒の主体的・対話的な学びを最大化します。最新情報をお届けします。",
+        //         placeholder: "your.email@address.com",
+        //         buttonText: "事前登録",
+        //         privacyText: "個人情報の収集と利用に同意します。",
+        //         successMessage: "ご登録ありがとうございます！まもなく良いお知らせをお届けします。",
+        //         errorMessage: "エラーが発生しました。もう一度お試しください。"
+        //     },
+        //     en: {
+        //         fontClass: 'font-en',
+        //         headline: "Win Your Next Debate with AI",
+        //         subHeadline: "Debatory.ai is the ultimate training platform for competitive debate teams. Gain a data-driven edge with AI-powered speech analysis and strategy feedback. Be the first to know when we launch.",
+        //         placeholder: "your.email@address.com",
+        //         buttonText: "Get Early Access",
+        //         privacyText: "I agree to the collection and use of my personal information.",
+        //         successMessage: "Thank you for subscribing! We'll be in touch with some exciting news soon.",
+        //         errorMessage: "An error occurred. Please try again."
+        //     },
+        //     th: {
+        //         fontClass: 'font-th',
+        //         headline: "เตรียมพร้อมสู่เวทีโลกด้วย AI",
+        //         subHeadline: "Debatory.ai คือเครื่องมือสำคัญสำหรับโรงเรียนนานาชาติและนักเรียนที่มุ่งสู่ความเป็นเลิศ พัฒนาทักษะการโต้วาทีภาษาอังกฤษและปลูกฝังการคิดเชิงวิพากษ์ด้วยแพลตฟอร์ม AI ของเรา รับข่าวสารก่อนใคร",
+        //         placeholder: "your.email@address.com",
+        //         buttonText: "ลงทะเบียนล่วงหน้า",
+        //         privacyText: "ฉันยอมรับในการเก็บรวบรวมและใช้ข้อมูลส่วนบุคคลของฉัน",
+        //         successMessage: "ขอบคุณที่สมัครสมาชิก! เราจะติดต่อกลับไปพร้อมข่าวดีเร็วๆ นี้",
+        //         errorMessage: "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง"
+        //     },
+        //     tl: {
+        //         fontClass: 'font-tl',
+        //         headline: "Husayin ang Iyong Galing sa Debate gamit ang AI",
+        //         subHeadline: "Ang Debatory.ai ay ang pinakamahusay na platform para sa mga international school at mga mag-aaral na naghahangad ng pandaigdigang kahusayan. Pagbutihin ang mga kasanayan sa debate sa Ingles at kritikal na pag-iisip. Maunang makaalam sa aming paglulunsad.",
+        //         placeholder: "your.email@address.com",
+        //         buttonText: "Mag-subscribe",
+        //         privacyText: "Sumasang-ayon ako sa pagkolekta at paggamit ng aking personal na impormasyon.",
+        //         successMessage: "Salamat sa pag-subscribe! Makakatanggap ka ng magandang balita mula sa amin sa lalong madaling panahon.",
+        //         errorMessage: "Nagkaroon ng error. Pakisubukang muli."
+        //     }
+        // };
+
+        // const translations = {
+        //     ko: {
+        //         fontClass: 'font-ko',
+        //         headline: "AI와 함께, 건강한 토론 문화를 만들어가세요",
+        //         subHeadline: "Debatory.ai는 서로 다른 관점을 존중하며 소통하는 토론 문화를 만듭니다. 논리적 사고력과 경청 능력을 기르고, 다양성을 인정하는 성숙한 시민으로 성장하세요. 건전한 토론이 만드는 더 나은 사회를 경험해보세요.",
+        //         placeholder: "your.email@address.com",
+        //         buttonText: "사전 등록",
+        //         privacyText: "개인정보 수집 및 이용에 동의합니다.",
+        //         successMessage: "신청해주셔서 감사합니다! 곧 좋은 소식으로 찾아뵙겠습니다.",
+        //         errorMessage: "오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+        //     },
+        //     ja: {
+        //         fontClass: 'font-ja',
+        //         headline: "AIとともに、健全な議論文化を築きましょう",
+        //         subHeadline: "Debatory.aiは、互いの視点を尊重し合うコミュニケーションを育みます。論理的思考力と傾聴力を養い、多様性を認める成熟した市民として成長してください。健全な議論がつくる、より良い社会を体験しましょう。",
+        //         placeholder: "your.email@address.com",
+        //         buttonText: "事前登録",
+        //         privacyText: "個人情報の収集と利用に同意します。",
+        //         successMessage: "ご登録ありがとうございます！まもなく良いお知らせをお届けします。",
+        //         errorMessage: "エラーが発生しました。もう一度お試しください。"
+        //     },
+        //     en: {
+        //         fontClass: 'font-en',
+        //         headline: "Build a Healthier Debate Culture with AI",
+        //         subHeadline: "Debatory.ai fosters respectful dialogue and meaningful discourse. Develop critical thinking, active listening skills, and appreciation for diverse perspectives. Experience how constructive debate creates stronger communities and a more understanding society.",
+        //         placeholder: "your.email@address.com",
+        //         buttonText: "Get Early Access",
+        //         privacyText: "I agree to the collection and use of my personal information.",
+        //         successMessage: "Thank you for subscribing! We'll be in touch with some exciting news soon.",
+        //         errorMessage: "An error occurred. Please try again."
+        //     },
+        //     th: {
+        //         fontClass: 'font-th',
+        //         headline: "สร้างวัฒนธรรมการโต้วาทีที่สุขภาพดีด้วย AI",
+        //         subHeadline: "Debatory.ai ส่งเสริมการสนทนาที่เคารพซึ่งกันและกัน พัฒนาการคิดเชิงวิพากษ์ ทักษะการฟัง และการเห็นคุณค่าในมุมมองที่หลากหลาย สัมผัสประสบการณ์การโต้วาทีที่สร้างสรรค์เพื่อสังคมที่เข้าใจกันมากขึ้น",
+        //         placeholder: "your.email@address.com",
+        //         buttonText: "ลงทะเบียนล่วงหน้า",
+        //         privacyText: "ฉันยอมรับในการเก็บรวบรวมและใช้ข้อมูลส่วนบุคคลของฉัน",
+        //         successMessage: "ขอบคุณที่สมัครสมาชิก! เราจะติดต่อกลับไปพร้อมข่าวดีเร็วๆ นี้",
+        //         errorMessage: "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง"
+        //     },
+        //     tl: {
+        //         fontClass: 'font-tl',
+        //         headline: "Bumuo ng Malusog na Kultura ng Debate gamit ang AI",
+        //         subHeadline: "Ang Debatory.ai ay nagtataguyod ng mapagkalingang pagtalakayan at makabuluhang diskurso. Paunlarin ang kritikal na pag-iisip, mga kasanayan sa pakikinig, at pagpapahalaga sa iba't ibang pananaw. Maranasan kung paano ang konstruktibong debate ay lumilikha ng mas matatag na komunidad.",
+        //         placeholder: "your.email@address.com",
+        //         buttonText: "Mag-subscribe",
+        //         privacyText: "Sumasang-ayon ako sa pagkolekta at paggamit ng aking personal na impormasyon.",
+        //         successMessage: "Salamat sa pag-subscribe! Makakatanggap ka ng magandang balita mula sa amin sa lalong madaling panahon.",
+        //         errorMessage: "Nagkaroon ng error. Pakisubukang muli."
+        //     }
+        // };
+
         const translations = {
             ko: {
                 fontClass: 'font-ko',
-                headline: "AI와 함께, 당신의 학생부를 완성하세요",
-                subHeadline: "Debatory.ai는 대입 성공을 위한 가장 확실한 선택입니다. 체계적인 토론 훈련과 AI 분석 리포트로 학생부종합전형에서 압도적인 경쟁력을 확보하세요. 가장 먼저 소식을 받아보세요.",
+                headline: "AI와 함께, 건강한 토론 문화를 만들어가세요",
+                subHeadline: "Debatory.ai는 인간과 AI가 함께하는 즐거운 토론 경험을 제공합니다. 의회식 토론, 아시아 의회식, 영국 의회식 등 다양한 정규 토론 방식을 익히고, AI와 인간으로 구성된 공정한 심판 시스템으로 객관적인 피드백을 받으세요. 논리적 사고력과 경청 능력을 기르며, 다양성을 존중하는 성숙한 토론 문화를 경험해보세요.",
                 placeholder: "your.email@address.com",
-                buttonText: "사전 등록",
+                waitlistPrompt: "새로운 소식이 궁금하다면, 가장 먼저 받아볼 수 있도록 이메일을 등록해주세요.",
+                buttonText: "대기 목록 등록", // 또는 "웨이트리스트 신청"
                 privacyText: "개인정보 수집 및 이용에 동의합니다.",
-                successMessage: "신청해주셔서 감사합니다! 곧 좋은 소식으로 찾아뵙겠습니다.",
+                successMessage: "대기 목록에 등록되었습니다! 베타 출시 시 가장 먼저 초대해드릴게요.",
                 errorMessage: "오류가 발생했습니다. 잠시 후 다시 시도해주세요."
             },
             ja: {
                 fontClass: 'font-ja',
-                headline: "アクティブ・ラーニング、AIで始めましょう",
-                subHeadline: "Debatory.aiは、新しい学習指導要領に対応する最も効果的なターンキーソリューションです。AIが教師の授業準備をサポートし、生徒の主体的・対話的な学びを最大化します。最新情報をお届けします。",
+                headline: "AIとともに、健全な議論文化を築きましょう",
+                subHeadline: "Debatory.aiは、人間とAIが協力する楽しい議論体験を提供します。議会式ディベート、アジア議会式、英国議会式など様々な正式な議論形式を学び、AIと人間で構成された公正な審判システムから客観的なフィードバックを受けられます。論理的思考力と傾聴力を養い、多様性を尊重する成熟した議論文化を体験しましょう。",
                 placeholder: "your.email@address.com",
-                buttonText: "事前登録",
+                waitlistPrompt: "新しい情報をご希望の場合は、一番最初に受け取れるようメールアドレスをご登録ください。",
+                buttonText: "ウェイトリスト登録",
                 privacyText: "個人情報の収集と利用に同意します。",
-                successMessage: "ご登録ありがとうございます！まもなく良いお知らせをお届けします。",
+                successMessage: "ウェイトリストに登録されました！ベータ版リリース時に優先的にご案内いたします。",
                 errorMessage: "エラーが発生しました。もう一度お試しください。"
             },
             en: {
                 fontClass: 'font-en',
-                headline: "Win Your Next Debate with AI",
-                subHeadline: "Debatory.ai is the ultimate training platform for competitive debate teams. Gain a data-driven edge with AI-powered speech analysis and strategy feedback. Be the first to know when we launch.",
+                headline: "Build a Healthier Debate Culture with AI",
+                subHeadline: "Debatory.ai offers an engaging debate experience where humans and AI collaborate. Master various parliamentary debate formats including Asian Parliamentary, British Parliamentary, and other formal debate styles. Receive objective feedback from our fair judging system combining AI and human evaluators. Develop critical thinking, active listening skills, and experience a mature debate culture that celebrates diverse perspectives.",
                 placeholder: "your.email@address.com",
-                buttonText: "Get Early Access",
+                waitlistPrompt: "If you want to hear the latest news, please register your email to be the first to know.",
+                buttonText: "Join Waitlist",
                 privacyText: "I agree to the collection and use of my personal information.",
-                successMessage: "Thank you for subscribing! We'll be in touch with some exciting news soon.",
+                successMessage: "You're on the waitlist! We'll send you an exclusive invitation when we launch.",
                 errorMessage: "An error occurred. Please try again."
             },
             th: {
                 fontClass: 'font-th',
-                headline: "เตรียมพร้อมสู่เวทีโลกด้วย AI",
-                subHeadline: "Debatory.ai คือเครื่องมือสำคัญสำหรับโรงเรียนนานาชาติและนักเรียนที่มุ่งสู่ความเป็นเลิศ พัฒนาทักษะการโต้วาทีภาษาอังกฤษและปลูกฝังการคิดเชิงวิพากษ์ด้วยแพลตฟอร์ม AI ของเรา รับข่าวสารก่อนใคร",
+                headline: "สร้างวัฒนธรรมการโต้วาทีที่สุขภาพดีด้วย AI",
+                subHeadline: "Debatory.ai มอบประสบการณ์การโต้วาทีที่น่าสนใจ ที่มนุษย์และ AI ทำงานร่วมกัน เรียนรู้รูปแบบการโต้วาทีแบบรัฐสภาต่างๆ ทั้งแบบเอเชียน พาร์ลิเมนทารี แบบบริติช พาร์ลิเมนทารี และรูปแบบทางการอื่นๆ รับฟีดแบ็กที่เป็นกลางจากระบบตัดสินที่ยุติธรรม ซึ่งประกอบด้วย AI และผู้ประเมินมนุษย์ พัฒนาการคิดเชิงวิพากษ์และทักษะการฟัง เพื่อสัมผัสวัฒนธรรมการโต้วาทีที่เคารพในมุมมองที่หลากหลาย",
                 placeholder: "your.email@address.com",
-                buttonText: "ลงทะเบียนล่วงหน้า",
+                waitlistPrompt: "หากคุณต้องการรับข่าวสารล่าสุด กรุณาลงทะเบียนอีเมลของคุณเพื่อรับข่าวก่อนใคร",
+                buttonText: "เข้าร่วม Waitlist",
                 privacyText: "ฉันยอมรับในการเก็บรวบรวมและใช้ข้อมูลส่วนบุคคลของฉัน",
-                successMessage: "ขอบคุณที่สมัครสมาชิก! เราจะติดต่อกลับไปพร้อมข่าวดีเร็วๆ นี้",
+                successMessage: "คุณอยู่ใน waitlist แล้ว! เราจะส่งคำเชิญพิเศษเมื่อเปิดตัว",
                 errorMessage: "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง"
             },
             tl: {
                 fontClass: 'font-tl',
-                headline: "Husayin ang Iyong Galing sa Debate gamit ang AI",
-                subHeadline: "Ang Debatory.ai ay ang pinakamahusay na platform para sa mga international school at mga mag-aaral na naghahangad ng pandaigdigang kahusayan. Pagbutihin ang mga kasanayan sa debate sa Ingles at kritikal na pag-iisip. Maunang makaalam sa aming paglulunsad.",
+                headline: "Bumuo ng Malusog na Kultura ng Debate gamit ang AI",
+                subHeadline: "Ang Debatory.ai ay nag-aalok ng nakaka-engage na karanasan sa debate kung saan makikipagtulungan ang mga tao at AI. Matutunan ang iba't ibang parliamentary debate formats tulad ng Asian Parliamentary, British Parliamentary, at iba pang pormal na debate styles. Makatanggap ng objektibong feedback mula sa aming patas na judging system na pinagsasama ang AI at human evaluators. Paunlarin ang kritikal na pag-iisip, mga kasanayan sa pakikinig, at maranasan ang mature na kultura ng debate na nagse-celebrate sa diverse perspectives.",
                 placeholder: "your.email@address.com",
-                buttonText: "Mag-subscribe",
+                waitlistPrompt: "Kung gusto mong makatanggap ng mga pinakabagong balita, mangyaring irehistro ang iyong email para mauna kang makaalam.",
+                buttonText: "Sumali sa Waitlist",
                 privacyText: "Sumasang-ayon ako sa pagkolekta at paggamit ng aking personal na impormasyon.",
-                successMessage: "Salamat sa pag-subscribe! Makakatanggap ka ng magandang balita mula sa amin sa lalong madaling panahon.",
+                successMessage: "Nasa waitlist ka na! Magpapadala kami ng exclusive invitation kapag nag-launch na.",
                 errorMessage: "Nagkaroon ng error. Pakisubukang muli."
             }
         };
@@ -156,6 +268,7 @@
         const privacyLabel = document.getElementById('privacy-label');
         const languageHiddenInput = document.getElementById('language-hidden-input');
         const countryHiddenInput = document.getElementById('country-hidden-input');
+        const waitlistPrompt = document.getElementById('waitlist-prompt');
 
         function changeLanguage(lang) {
             if (!translations[lang]) return;
@@ -168,6 +281,7 @@
             headline.textContent = content.headline;
             subHeadline.textContent = content.subHeadline;
             emailInput.placeholder = content.placeholder;
+            waitlistPrompt.textContent = content.waitlistPrompt;
             submitButton.textContent = content.buttonText;
             privacyLabel.textContent = content.privacyText;
             formMessage.textContent = '';
